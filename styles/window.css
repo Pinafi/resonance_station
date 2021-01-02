@@ -1,0 +1,32 @@
+.window{
+    width:100%;
+    height:100%;
+    display: inline-flex;
+    flex-direction: column;
+    border: 2px solid var(--window-border-color);
+    background-color: var(--window-background-color);
+    overflow: hidden;
+}
+.window_title_bar{
+    height: 30px;
+    width:100%;
+    display: flex;
+    padding-left:8px;
+    padding-right:8px;
+    flex-direction: row;
+    color:var(--window-foreground-color);
+}
+.window_title_bar i{
+    cursor: pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+.window_title{
+    font-size: 0.8em;
+    display: flex;
+    align-items: center;
+    font-family: poppins;
+    font-weight: 400;
+    font-size: 0.8em;
+}

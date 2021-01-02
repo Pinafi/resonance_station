@@ -1,0 +1,18 @@
+@import url("./variables.css");
+@import url("./header.css");
+@import url("./window.css");
+@import url("./tracks_panel.css");
+@import url("./files_panel.css");
+@import url("./tracks_panel.css");
+body{
+    margin:unset;
+    padding:unset;
+    height:100vh;
+    width:100%;
+}
+#panels_area{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height:calc(100% - var(--header-height));
+}

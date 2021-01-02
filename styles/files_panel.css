@@ -1,0 +1,26 @@
+#filesPanel{
+    min-width:180px;
+    width:180px;
+}
+#filesPanel .upload_button{
+    width: 100%;
+    height: 26px;
+    border:unset;
+    font-size: 0.75em;
+    background-color:var(--upload_button-background-color);
+    color:var(--upload_button-foreground-color);
+}
+
+#filesPanel .sound{
+    height:26px;
+    line-height: 26px;
+    font-size: 0.75em;
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    padding:0px 8px 0px 8px;
+    color:#fff8;
+}
+#filesPanel .sound .mdi{
+    cursor:pointer;
+}
