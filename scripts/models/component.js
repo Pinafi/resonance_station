@@ -1,4 +1,7 @@
 class Component{
+
+    element = null;
+    
     constructor(request, template_url){
         this.request = request;
         this.template_url = template_url;

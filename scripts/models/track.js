@@ -31,24 +31,24 @@ class TrackControl extends Component{
                     audio.setAttribute("preload","auto");
                     audio.src = e.target.result;
                     audio.name = file.name;
+
                     audio.addEventListener('loadedmetadata', () => {
 
-                        let sound = new TrackSound(audio, this.request);
+                        let sound = new TrackSound(audio, this.track, this.request);
                         sound.afterInit = () => {
                             sound.element.textContent = file.name;
                             sound.element.style.width = `${audio.duration*60}px`;
+                            
+                            let left = ( ((tracksPanel.trackPointerMoment * 100)/1000) *60)/100;
+                            sound.element.style.left = `${left}px`;
+                            sound.audio["startTs"] = tracksPanel.trackPointerMoment;
+                            
                             this.track.line.element.append(sound.element);
-
-                            audio["startTs"] = 0;
-                            if(this.track.line.sounds.length > 0){
-                                for(let sound of this.track.line.sounds){
-                                    audio["startTs"] += (sound.audio.duration * 1000);
-                                }
-                            }
-
                             this.track.line.sounds.push(sound);
+                            this.track.line.sounds.sort((soundA, soundB) => soundA.audio["startTs"] - soundB.audio["startTs"]);
+
                             if(this.track.onAddSound != null && typeof this.track.onAddSound === "function")
-                                this.track.onAddSound(audio);
+                                this.track.onAddSound(sound);
                         }
                     },false);
                 };

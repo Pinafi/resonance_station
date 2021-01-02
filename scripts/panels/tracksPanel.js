@@ -1,65 +1,59 @@
 class TracksPanel extends Panel{
     
     tracks = [];
+    counter = null;
     playedSounds = [];
-    tracksLines = null;
-    tracksControls = null;
+    timeline = null;
+    timelineHeader = null;
+    timelineControls = null;
     trackPointer = null;
     trackPointerMoment = 0;
-    counter = null;
-    endTs = 0;
+    endCompositionTs = 0;
 
     constructor(request){
         super(request, "tracks-panel", "templates/panels/tracks-panel.html");
     }
 
     afterInit = () => {
-        this.tracksLines = document.querySelector("#timeline");
-        this.tracksControls = document.querySelector("#controls");
-        this.trackPointer = this.element.querySelector("#track_pointer");
+        this.timeline = document.querySelector("#timeline");
+        this.timelineControls = document.querySelector("#controls");
         
         this.setTimeLabels();
+        this.initTrackPointer();
         this.setControls();
         this.addTrack();
-        this.calculateCounter();
+        this.calculateDisplayCounter();
         
-        window.onresize = () => {
-            this.setTimeLabels();
+        this.timeline.onscroll = () => {
+            if(this.timelineHeader.clientWidth < this.timeline.scrollWidth){
+                this.timelineHeader.style.width = this.timeline.scrollWidth+"px";
+                this.timelineControls.style.width = this.timeline.scrollWidth+"px";
+                this.setTimeLabels();
+            }
         }
         this.element.querySelector("#controls_header .mdi-plus").onclick = () => {
             this.addTrack();        
         };
     }
 
-    setTimeLabels = () => {
-        let line_header = this.element.querySelector("#line_header");
-        line_header.innerHTML = "";
-        let line_header_width = line_header.clientWidth;
-        for(let i = 0; i < Math.ceil(line_header_width/60); i++){
-            let label = document.createElement("span");
-            let hours = (i < 10)?`0${i}`:i.toString();
-            if(i > 0){
-                label.textContent = `${hours}:00`;
-                label.style.left = `${(i*60)-30}px`;
-            }
-            line_header.append(label);
-        }
-
+    initTrackPointer = () => {
         let mouseObservedAction = null;
         let continuePlaying = null;
+        
+        this.trackPointer = this.element.querySelector("#track_pointer");
 
-        let dragComponent = () => {
+        let dragComponent = (event) => {
             continuePlaying = this.counter != null;
             
             this.stop();
-            let left = (event.pageX - this.tracksLines.offsetLeft) + this.tracksLines.scrollLeft;
+            let left = (event.pageX - this.timeline.offsetLeft) + this.timeline.scrollLeft;
             left = (left < 0)? 0 : left;
             let trackPointerMoment = (((left*100)/60) * 1000)/100;
             this.setTrackPointerMoment(trackPointerMoment);
 
             let action = (e) => {
                 if(e.type == "mousemove"){
-                    let left = (e.pageX - this.tracksLines.offsetLeft) + this.tracksLines.scrollLeft;
+                    let left = (e.pageX - this.timeline.offsetLeft) + this.timeline.scrollLeft;
                     left = (left < 0)? 0 : left;
                     let trackPointerMoment = (((left*100)/60) * 1000)/100;
                     this.setTrackPointerMoment(trackPointerMoment);
@@ -78,15 +72,29 @@ class TracksPanel extends Panel{
                 }
             });
         }
-        line_header.onmousedown = (event) => {
-            dragComponent();
+        this.timelineHeader.onmousedown = (event) => {
+            dragComponent(event);
             stopDragComponent();
         };
         this.trackPointer.onmousedown =  (event) => {
-            dragComponent();
+            dragComponent(event);
             stopDragComponent();
         };
-        
+    }
+
+    setTimeLabels = () => {
+        this.timelineHeader = this.element.querySelector("#line_header");
+        this.timelineHeader.innerHTML = "";
+        let timelineHeaderWidth = this.timelineHeader.clientWidth;
+        for(let i = 0; i < Math.ceil(timelineHeaderWidth/60); i++){
+            let label = document.createElement("span");
+            let hours = (i < 10)?`0${i}`:i.toString();
+            if(i > 0){
+                label.textContent = `${hours}:00`;
+                label.style.left = `${(i*60)-30}px`;
+            }
+            this.timelineHeader.append(label);
+        }
     }
 
     setControls = () => {
@@ -114,7 +122,7 @@ class TracksPanel extends Panel{
                 startTime = lastUpdate - this.trackPointerMoment;
                 this.tracks.forEach(track => {
                     for(let sound of track.line.sounds){
-                        if((sound.audio.startTs*1000) < this.trackPointerMoment && (sound.audio.startTs*1000) + (sound.audio.duration*1000) > this.trackPointerMoment){
+                        if(sound.audio.startTs < this.trackPointerMoment && sound.audio.startTs + (sound.audio.duration*1000) > this.trackPointerMoment){
                             sound.pause()
                             sound.audio.currentTime = (this.trackPointerMoment - sound.audio.startTs)/1000;
                             sound.audio.play();
@@ -131,15 +139,15 @@ class TracksPanel extends Panel{
                 this.tracks.forEach(track => {
                     track.line.sounds.forEach(sound => {
                         if(
-                            sound.audio.startTs*1000 < this.trackPointerMoment && 
-                            ((sound.audio.startTs*1000) + (sound.audio.duration*1000)) > this.trackPointerMoment
+                            sound.audio.startTs < this.trackPointerMoment && 
+                            (sound.audio.startTs + (sound.audio.duration*1000)) > this.trackPointerMoment
                         ){
                             sound.play();
                             this.playedSounds.push(sound);
                         }
                     });
                 });
-                if(this.trackPointerMoment > this.endTs)
+                if(this.trackPointerMoment > this.endCompositionTs)
                     this.stop();
             }, 10);
         }
@@ -164,7 +172,7 @@ class TracksPanel extends Panel{
     setTrackPointerMoment = (value) => {
         this.trackPointerMoment = value;
         this.trackPointer.style.left = this.milisecondsToPixels(this.trackPointerMoment);
-        this.calculateCounter();
+        this.calculateDisplayCounter();
     }
 
     milisecondsToPixels = ( miliseconds => (((((miliseconds)*100)/1000)*60)/100)+"px" )
@@ -174,7 +182,7 @@ class TracksPanel extends Panel{
         this.counter = null;
     }
 
-    calculateCounter=() => {
+    calculateDisplayCounter=() => {
         let hours = 0;
         let minutes = 0;
         let seconds = 0;
@@ -217,14 +225,17 @@ class TracksPanel extends Panel{
         
         track = new Track(id, name, this.request);
         track.control.afterInit = () => {
-            this.tracksControls.append(track.control.element);
+            this.timelineControls.append(track.control.element);
         }
         track.line.afterInit = () => {
-            this.tracksLines.querySelector(".content").append(track.line.element);
+            this.timeline.querySelector(".content").append(track.line.element);
         }
         track.onAddSound = (audio) => {
             this.setTimeLabels();
-            this.stop();
+            this.clearCounter();
+            this.playedSounds.forEach(s => s.stop());
+            this.playedSounds = [];
+
             this.calculateCompositionDuration();
             if(!filesPanel.sounds.some((sound) => sound.audio.name == audio.name)){
                 let fileSound = new FileSound(audio, this.request);
@@ -244,12 +255,13 @@ class TracksPanel extends Panel{
     }
 
     calculateCompositionDuration = () => {
-        this.endTs = 0;
+        this.endCompositionTs = 0;
+        
         for(let track of this.tracks){
             if(track.line.sounds.length > 0){
                 let sound = track.line.sounds[track.line.sounds.length - 1];
-                if(this.endTs < sound.audio.startTs + (sound.audio.duration*1000))
-                    this.endTs = sound.audio.startTs + (sound.audio.duration*1000);
+                if(this.endCompositionTs < sound.audio.startTs + (sound.audio.duration*1000))
+                    this.endCompositionTs = sound.audio.startTs + (sound.audio.duration*1000);
             }
         }
     }
