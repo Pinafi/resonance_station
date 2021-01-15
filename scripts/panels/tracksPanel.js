@@ -103,6 +103,8 @@ class TracksPanel extends Panel{
         let stopButton = document.querySelector(".window_title_bar .mdi-stop");
 
         playButton.onclick = () => {
+            if(this.trackPointerMoment > this.endCompositionTs)
+                this.stop();
             this.play();
         };
         pauseButton.onclick = () => {
@@ -114,10 +116,10 @@ class TracksPanel extends Panel{
     }
 
     play = () => {
-        if(this.tracks.some(track => track.line.sounds.length > 0)){
+        let hasSomeTrackWithSounds = this.tracks.some(track => track.line.sounds.length > 0);
+        if(hasSomeTrackWithSounds){
             let lastUpdate = Date.now();
             let startTime = lastUpdate;
-            
             if(this.trackPointerMoment > 0 ){
                 startTime = lastUpdate - this.trackPointerMoment;
                 this.tracks.forEach(track => {

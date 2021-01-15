@@ -24,12 +24,13 @@ class TrackControl extends Component{
 
             input.onchange = (e) => { 
                 let file = e.target.files[0];
-
                 let reader = new FileReader();
                 reader.onload = (e)=>{
+                    
                     let audio = document.createElement('audio');
                     audio.setAttribute("preload","auto");
                     audio.src = e.target.result;
+                    audio["file"] = file;
                     audio.name = file.name;
 
                     audio.addEventListener('loadedmetadata', () => {
@@ -48,7 +49,7 @@ class TrackControl extends Component{
                             this.track.line.sounds.sort((soundA, soundB) => soundA.audio["startTs"] - soundB.audio["startTs"]);
 
                             if(this.track.onAddSound != null && typeof this.track.onAddSound === "function")
-                                this.track.onAddSound(sound);
+                                this.track.onAddSound(audio);
                         }
                     },false);
                 };
@@ -76,6 +77,10 @@ class TrackLine extends Component{
     }
 
     afterInit = () => {}
+
+    sortSounds = () => {
+        this.sounds.sort((soundA, soundB) => soundA.audio["startTs"] - soundB.audio["startTs"]);
+    }
 }
 
 class Track{
