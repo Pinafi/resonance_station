@@ -1,4 +1,4 @@
-#tracksPanel .window_title_bar .window_title{
+#tracksPanel .panel_title_bar .panel_title{
     min-width:150px;
     width:150px;
     max-width:150px;
@@ -108,6 +108,7 @@
 }
 .line .sound{
     height:18px;
+    font-weight: 500;
     overflow: hidden;
     position: absolute;
     line-height: 18px;
@@ -119,7 +120,7 @@
     border-radius:0.2rem;
     padding:0px 2px 0px 2px;
     cursor: pointer;
-    color:var(--sound-foreground-color);
+    color:transparent;
     background-size: 100% 200%;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -132,6 +133,7 @@
 }
 .line .sound:hover{
     background-color:var(--sound-background-color);
+    color:var(--sound-foreground-color);
 }
 .line .sound::after{
     content:'';
@@ -190,7 +192,7 @@
 
 #counter{
     font-size: 0.8em;
-    font-family: poppins;
+    font-family: 'Poppins', sans-serif;
     font-weight: 400;
     line-height: 30px;
 }

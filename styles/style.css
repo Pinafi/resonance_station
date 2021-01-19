@@ -1,9 +1,12 @@
 @import url("./variables.css");
-@import url("./header.css");
-@import url("./window.css");
-@import url("./tracks_panel.css");
-@import url("./files_panel.css");
-@import url("./tracks_panel.css");
+@import url("./libs/fonts.css");
+@import url("./components/dialog.css");
+@import url("./components/header.css");
+@import url("./panels/panel.css");
+@import url("./panels/tracks_panel.css");
+@import url("./panels/track-sound-dialog.css");
+@import url("./panels/files_panel.css");
+
 body{
     margin:unset;
     padding:unset;

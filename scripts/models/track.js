@@ -1,4 +1,5 @@
 class TrackControl extends Component{
+    
     constructor(track, name, request){
         super(request, "templates/components/track-control.html");
         this.name = name;
@@ -55,7 +56,6 @@ class TrackControl extends Component{
                 };
                 reader.readAsDataURL(file);
             }
-
             input.click();
         }
         this.afterInit();
@@ -84,12 +84,46 @@ class TrackLine extends Component{
 }
 
 class Track{
-    constructor(id, name, request){
+
+    constructor(id, name, parentComponent, request){
         this.id = id;
         this.name = name;
         this.request = request;
         this.onAddSound = null;
+        this.parentComponent = parentComponent;
         this.control = new TrackControl(this, this.name, this.request);
         this.line = new TrackLine(this, this.name, this.request);
+        this.init();
     }
+
+    init = () => {
+        this.control.afterInit = () => {
+            this.parentComponent.timelineControls.append(this.control.element);
+        };
+        this.line.afterInit = () => {
+            this.parentComponent.timeline.querySelector(".content").append(this.line.element);
+        };
+        this.onAddSound = (audio) => {
+            this.parentComponent.setTimeLabels();
+            this.parentComponent.clearCounter();
+            this.parentComponent.playedSounds.forEach(s => s.stop());
+            this.parentComponent.playedSounds = [];
+            this.parentComponent.calculateCompositionDuration();
+    
+            if(!filesPanel.sounds.some((sound) => sound.audio.name == audio.name)){
+                let fileSound = new FileSound(audio, this.request);
+                fileSound.afterInit = () => {
+                    fileSound.element.querySelector(".sound_name").textContent = audio.name;
+                    filesPanel.addSound(fileSound);
+                }
+            }
+        }
+    }
+
+    onRemoveTrack = () => {
+        if(this.parentComponent.tracks.length == 0)
+            this.parentComponent.stop();
+        this.parentComponent.calculateCompositionDuration();
+    }
+
 }

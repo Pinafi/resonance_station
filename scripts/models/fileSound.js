@@ -1,4 +1,5 @@
 class FileSound extends Component{
+    
     constructor(audio, request){
         super(request, "templates/components/file-sound.html");
         this.audio = audio;

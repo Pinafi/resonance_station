@@ -1,32 +1,38 @@
-.window{
+.panel{
     width:100%;
     height:100%;
     display: inline-flex;
     flex-direction: column;
-    border: 2px solid var(--window-border-color);
-    background-color: var(--window-background-color);
+    border: 2px solid var(--panel-border-color);
+    background-color: var(--panel-background-color);
     overflow: hidden;
 }
-.window_title_bar{
+.panel_title_bar{
     height: 30px;
     width:100%;
     display: flex;
     padding-left:8px;
     padding-right:8px;
     flex-direction: row;
-    color:var(--window-foreground-color);
+    color:var(--panel-foreground-color);
 }
-.window_title_bar i{
+.panel_title_bar i{
     cursor: pointer;
     display:flex;
     align-items:center;
     justify-content:center;
 }
-.window_title{
+.panel_title{
     font-size: 0.8em;
     display: flex;
     align-items: center;
-    font-family: poppins;
+    font-family: 'Poppins', sans-serif;
     font-weight: 400;
     font-size: 0.8em;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }

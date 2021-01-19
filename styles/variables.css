@@ -1,16 +1,16 @@
 :root{
     /*border color*/
-    --window-border-color:#253548;
+    --panel-border-color:#253548;
     /*foreground color*/
     --upload_button-foreground-color:#ffffffcc;
-    --window-foreground-color:#ffffff80;
+    --panel-foreground-color:#ffffff80;
     --sound-foreground-color:#000;
     --controls_header-foreground-color:#ffffff80;
     --control-foreground-color:#ffffff80;
     /*background color*/
     --upload_button-background-color:#061220;
     --header-background-color:#0e1928;
-    --window-background-color:#132131;
+    --panel-background-color:#132131;
     --sound-background-color:#00ff4c63;
     --timeline-background-color:#0b1b2f;
     --line_options-background-color:#061220;

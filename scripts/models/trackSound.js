@@ -4,6 +4,7 @@ class TrackSound extends Component{
         super(request, "templates/components/track-sound.html");
         this.audio = audio;
         this.track = track;
+        this.dialog = null;
     }
     
     afterInit = () => {}
@@ -51,9 +52,11 @@ class TrackSound extends Component{
     initDragFunction = (event) => {
         let absoluteXClickPosition = ((event.pageX - tracksPanel.timeline.offsetLeft) + tracksPanel.timeline.scrollLeft);
         let clickedPositionOnElement = (absoluteXClickPosition - ((60 * ((this.audio["startTs"] * 100)/1000) )/ 100));
+        let dragged = false;
         //init drag handle
         let mouseObservedAction = global.mouse.subscribe((e) => {
             if(e.type == "mousemove"){
+                dragged = true;
                 if(e.target != this.element.parentElement && e.target.classList.contains("line")){
                     e.target.append(this.element);
                     let removedSounds = this.track.line.sounds.splice(this,1);
@@ -77,10 +80,26 @@ class TrackSound extends Component{
                 global.mouse.unsubscribe(mouseObservedAction);
                 global.mouse.unsubscribe(mouseUpSubscriptedAction);
                 this.stop();
-                this.track.line.sortSounds();
-                tracksPanel.calculateCompositionDuration();
+
+                if(e.x == event.x && !dragged){
+                    this.click();
+                }else{
+                    this.track.line.sortSounds();
+                    tracksPanel.calculateCompositionDuration();
+                }
             }
         });
+    }
+
+    click = () => {
+        if(this.dialog != null){
+            this.dialog.open();
+        }else{
+            this.dialog = new TrackSoundDialog(this.request);
+            this.dialog.afterInit = () => {
+                this.dialog.open();
+            }
+        }
     }
 
     play = () => {

@@ -98,9 +98,9 @@ class TracksPanel extends Panel{
     }
 
     setControls = () => {
-        let playButton = document.querySelector(".window_title_bar .mdi-play");
-        let pauseButton = document.querySelector(".window_title_bar .mdi-pause");
-        let stopButton = document.querySelector(".window_title_bar .mdi-stop");
+        let playButton = document.querySelector(".panel_title_bar .mdi-play");
+        let pauseButton = document.querySelector(".panel_title_bar .mdi-pause");
+        let stopButton = document.querySelector(".panel_title_bar .mdi-stop");
 
         playButton.onclick = () => {
             if(this.trackPointerMoment > this.endCompositionTs)
@@ -212,53 +212,19 @@ class TracksPanel extends Panel{
         }else if(miliseconds < 100){
             miliseconds = "0"+miliseconds;
         }
-
         this.element.querySelector("#counter").textContent = `${hours} : ${minutes} : ${seconds} : ${miliseconds}`;
     }
 
     addTrack = (name = null) => {
-        let id = 1;
         let track = null;
-
-        if(this.tracks.length)
-            id = this.tracks[this.tracks.length-1].id + 1;
-        if(name == null)
-            name = `Track ${id}`;
-        
-        track = new Track(id, name, this.request);
-        track.control.afterInit = () => {
-            this.timelineControls.append(track.control.element);
-        }
-        track.line.afterInit = () => {
-            this.timeline.querySelector(".content").append(track.line.element);
-        }
-        track.onAddSound = (audio) => {
-            this.setTimeLabels();
-            this.clearCounter();
-            this.playedSounds.forEach(s => s.stop());
-            this.playedSounds = [];
-
-            this.calculateCompositionDuration();
-            if(!filesPanel.sounds.some((sound) => sound.audio.name == audio.name)){
-                let fileSound = new FileSound(audio, this.request);
-                fileSound.afterInit = () => {
-                    fileSound.element.querySelector(".sound_name").textContent = audio.name;
-                    filesPanel.addSound(fileSound);
-                }
-            }
-        }
-        track.onRemoveTrack = () => {
-            if(this.tracks.length == 0){
-                this.stop();
-            }
-            this.calculateCompositionDuration();
-        }
+        let id = (this.tracks.length)? (this.tracks[this.tracks.length-1].id+1) : 1;
+        if(name == null) name = `Track ${id}`;
+        track = new Track(id, name, this, this.request);
         this.tracks.push(track);
     }
 
     calculateCompositionDuration = () => {
         this.endCompositionTs = 0;
-        
         for(let track of this.tracks){
             if(track.line.sounds.length > 0){
                 let sound = track.line.sounds[track.line.sounds.length - 1];
